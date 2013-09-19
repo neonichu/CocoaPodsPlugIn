@@ -13,6 +13,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		861FAC7E17EB22080020404A /* CCPWorkspaceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPWorkspaceManager.h; sourceTree = "<group>"; };
+		861FAC7F17EB22080020404A /* CCPWorkspaceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPWorkspaceManager.m; sourceTree = "<group>"; };
 		8644AD7017EB1A29004E2C2F /* CocoaPodsPlugIn.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CocoaPodsPlugIn.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		8644AD7317EB1A29004E2C2F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		8644AD7517EB1A29004E2C2F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -65,6 +67,8 @@
 		8644AD7717EB1A29004E2C2F /* CocoaPodsPlugIn */ = {
 			isa = PBXGroup;
 			children = (
+				861FAC7E17EB22080020404A /* CCPWorkspaceManager.h */,
+				861FAC7F17EB22080020404A /* CCPWorkspaceManager.m */,
 				8644AD7D17EB1A29004E2C2F /* CocoaPodsPlugIn.h */,
 				8644AD7E17EB1A29004E2C2F /* CocoaPodsPlugIn.m */,
 			);
