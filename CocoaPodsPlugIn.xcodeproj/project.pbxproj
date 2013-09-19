@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		860F6F9617EB4F0100EE4920 /* CCPWorkspaceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 861FAC7F17EB22080020404A /* CCPWorkspaceManager.m */; };
 		8644AD7417EB1A29004E2C2F /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8644AD7317EB1A29004E2C2F /* AppKit.framework */; };
 		8644AD7617EB1A29004E2C2F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8644AD7517EB1A29004E2C2F /* Foundation.framework */; };
 		8644AD7F17EB1A29004E2C2F /* CocoaPodsPlugIn.m in Sources */ = {isa = PBXBuildFile; fileRef = 8644AD7E17EB1A29004E2C2F /* CocoaPodsPlugIn.m */; };
+		8647EEB417EB461300A116F6 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8647EEB317EB461300A116F6 /* icon.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,7 @@
 		8644AD7D17EB1A29004E2C2F /* CocoaPodsPlugIn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CocoaPodsPlugIn.h; sourceTree = "<group>"; };
 		8644AD7E17EB1A29004E2C2F /* CocoaPodsPlugIn.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CocoaPodsPlugIn.m; sourceTree = "<group>"; };
 		8644AD8017EB1A29004E2C2F /* CocoaPodsPlugIn-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CocoaPodsPlugIn-Prefix.pch"; sourceTree = "<group>"; };
+		8647EEB317EB461300A116F6 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = CocoaPodsPlugIn/icon.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +46,7 @@
 				8644AD7717EB1A29004E2C2F /* CocoaPodsPlugIn */,
 				8644AD7217EB1A29004E2C2F /* Frameworks */,
 				8644AD7117EB1A29004E2C2F /* Products */,
+				8647EEB217EB45FB00A116F6 /* Resources */,
 				8644AD7817EB1A29004E2C2F /* Supporting Files */,
 			);
 			sourceTree = "<group>";
@@ -83,6 +87,14 @@
 			);
 			name = "Supporting Files";
 			path = CocoaPodsPlugIn;
+			sourceTree = "<group>";
+		};
+		8647EEB217EB45FB00A116F6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8647EEB317EB461300A116F6 /* icon.png */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -136,6 +148,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8647EEB417EB461300A116F6 /* icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,6 +159,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				860F6F9617EB4F0100EE4920 /* CCPWorkspaceManager.m in Sources */,
 				8644AD7F17EB1A29004E2C2F /* CocoaPodsPlugIn.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -228,6 +242,11 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "$(HOME)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/OtherFrameworks",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Frameworks",
+				);
 				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CocoaPodsPlugIn/CocoaPodsPlugIn-Prefix.pch";
@@ -246,6 +265,11 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "$(HOME)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/OtherFrameworks",
+					"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Frameworks",
+				);
 				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CocoaPodsPlugIn/CocoaPodsPlugIn-Prefix.pch";

@@ -11,14 +11,23 @@
 #import "CCPWorkspaceManager.h"
 #import "CocoaPodsPlugIn.h"
 
-@interface DVTImageAndTextCell : NSTextFieldCell
+@interface DVTBindingHelper : NSObject
 
+@end
+
+@interface DVTImageAndTextCell : NSTextFieldCell {
+    DVTBindingHelper *_bindingHelper;
+}
+
+@property (readonly) DVTBindingHelper* bindingHelper;
 @property(copy) NSString *subtitle;
 
 @end
 
 @interface NSObject (Yolo)
 
+//- (NSArray*)bbu_tableColumns;
+- (NSTableView*)bbu_tableView;
 - (NSCell *)bbu_tableView:(NSTableView *)tableView dataCellForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row;
 - (id)bbu_tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row;
 
@@ -134,9 +143,19 @@ void LogMethods(Class clazz) {
 #pragma clang diagnostic pop
         });
         
+        Class cell = NSClassFromString(@"DVTBindingHelper");
+        Method m = class_getInstanceMethod(cell, @selector(bindingHelper));
+        IMP helperIMP = imp_implementationWithBlock(^(id sself) {
+            Ivar ivar = class_getInstanceVariable([sself class], "_bindingHelper");
+            DVTBindingHelper* helper = object_getIvar(sself, ivar);
+            return helper;
+        });
+        class_addMethod(cell, @selector(bindingHelper), helperIMP, method_getTypeEncoding(m));
+        
+        
         Class thing = NSClassFromString(@"SummaryTargetFrameworksViewController");
         
-        LogMethods(thing);
+        //LogMethods(thing);
         
         newSelector = @selector(bbu_titleForDisplay);
         SwizzleWithBlock(thing, @selector(titleForDisplay), newSelector,
@@ -183,11 +202,54 @@ void LogMethods(Class clazz) {
                              
                              if ([NSStringFromClass(cell.class) isEqualToString:@"IDENavigatorDataCell"]) {
                                  DVTImageAndTextCell* dtvCell = (DVTImageAndTextCell*)cell;
+                                 
+                                 NSLog(@"%@", dtvCell.bindingHelper);
+                                 for (id bind in [dtvCell.bindingHelper exposedBindings]) {
+                                     NSLog(@"bindings: %@", bind);
+                                 }
+                                 
+                                 [dtvCell.bindingHelper unbind:@"image"];
+                                 [dtvCell.bindingHelper unbind:@"title"];
+                                 
+                                 NSArray* pods = [[self class] listOfCurrentPods];
+                                 //dtvCell.stringValue = pods[row];
+                                 dtvCell.image = [NSImage imageNamed:@"icon"];
+                                 dtvCell.title = [pods[row] copy];
+                                 //[dtvCell setObjectValue:pods[row]];
+                                 //[dtvCell setAttributedStringValue:pods[row]];
+                                 
                                  dtvCell.subtitle = @"Superstar Marin";
+                                 
+                                 NSLog(@"Cell value: %@ %@", NSStringFromClass(((NSObject*)dtvCell.objectValue).class), dtvCell.objectValue);
+                                 // Cell is not a view.
+                                 //NSLog(@"cell view hierarchy: %@", [dtvCell performSelector:@selector(_subtreeDescription)]);
                              }
                              
                              return cell;
                          });
+        
+        
+        
+#if 0
+        newSelector = @selector(bbu_tableColumns);
+        SwizzleWithBlock(thing, @selector(tableColumns), newSelector, ^(id sself) {
+            NSArray* columns = [sself bbu_tableColumns];
+            NSAssert(columns.count >= 1, @"FU");
+            columns = @[ columns[0] ];
+            NSLog(@"tableColumns: %@", columns);
+            return columns;
+        });
+#endif
+        
+        newSelector = @selector(bbu_tableView);
+        SwizzleWithBlock(thing, @selector(tableView), newSelector, ^(id sself) {
+            NSTableView* tableView = [sself bbu_tableView];
+            for (int i = 1; i < tableView.tableColumns.count; i++) {
+                NSTableColumn* col = tableView.tableColumns[1];
+                [tableView removeTableColumn:col];
+            }
+        });
+        
     }
     return self;
 }
