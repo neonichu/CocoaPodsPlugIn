@@ -6,7 +6,24 @@
 //    Copyright (c) 2013 Boris Bügling. All rights reserved.
 //
 
+#import <objc/runtime.h>
+
 #import "CocoaPodsPlugIn.h"
+
+void Swizzle(Class c, SEL orig, SEL new) {
+    Method origMethod = class_getInstanceMethod(c, orig);
+    Method newMethod = class_getInstanceMethod(c, new);
+    
+    if (class_addMethod(c, orig,
+                        method_getImplementation(newMethod),
+                        method_getTypeEncoding(newMethod))) {
+        class_replaceMethod(c, new,
+                            method_getImplementation(origMethod),
+                            method_getTypeEncoding(origMethod));
+    } else {
+        method_exchangeImplementations(origMethod, newMethod);
+    }
+}
 
 @implementation CocoaPodsPlugIn
 
@@ -23,32 +40,36 @@
 - (id)init
 {
     if (self = [super init]) {
-        // Create menu items, initialize UI, etc.
-
-        // Sample Menu Item:
-        NSMenuItem *menuItem = [[NSApp mainMenu] itemWithTitle:@"File"];
-        if (menuItem) {
-            [[menuItem submenu] addItem:[NSMenuItem separatorItem]];
-            NSMenuItem *actionMenuItem = [[NSMenuItem alloc] initWithTitle:@"Do Action" action:@selector(doMenuAction) keyEquivalent:@""];
-            [actionMenuItem setTarget:self];
-            [[menuItem submenu] addItem:actionMenuItem];
-            [actionMenuItem release];
+        Class clazz = NSClassFromString(@"IDECapsuleView");
+        SEL newSelector = @selector(bbu_initWithCapsuleViewController:);
+        SEL originalSelector = @selector(initWithCapsuleViewController:);
+        
+        IMP imp = imp_implementationWithBlock(^(id sself, id vc) {
+            NSLog(@"IDEKit: %@\n%@", sself, vc);
+            //[sself performSelector:@selector(_subtreeDescription)];
+            
+            return [sself performSelector:newSelector withObject:vc];
+        });
+        
+        if (!clazz) {
+            NSLog(@"IDEKit: Class not found.");
         }
+        
+        Method m = class_getInstanceMethod(clazz, originalSelector);
+        if (!class_addMethod(clazz, newSelector, imp, method_getTypeEncoding(m))) {
+            NSLog(@"IDEKit: Something went wrong!");
+        }
+        
+        Swizzle(clazz, originalSelector, newSelector);
+        
+        NSLog(@"IDEKit: Added logs");
     }
     return self;
-}
-
-// Sample Action, for menu item:
-- (void)doMenuAction
-{
-    NSAlert *alert = [NSAlert alertWithMessageText:@"Hello, World" defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:@""];
-    [alert runModal];
 }
 
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [super dealloc];
 }
 
 @end
