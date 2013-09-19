@@ -25,6 +25,45 @@ void Swizzle(Class c, SEL orig, SEL new) {
     }
 }
 
+void SwizzleWithBlock(Class clazz, SEL originalSelector, SEL newSelector, id block) {
+    IMP imp = imp_implementationWithBlock(block);
+    
+    if (!clazz) {
+        NSLog(@"CocoaPodsPlugIn: Class not found.");
+    }
+    
+    Method m = class_getInstanceMethod(clazz, originalSelector);
+    if (!class_addMethod(clazz, newSelector, imp, method_getTypeEncoding(m))) {
+        NSLog(@"CocoaPodsPlugIn: Something went wrong!");
+    }
+    
+    Swizzle(clazz, originalSelector, newSelector);
+    
+    NSLog(@"CocoaPodsPlugIn: Swizzled %@", NSStringFromSelector(originalSelector));
+}
+
+void LogMethods(Class clazz) {
+    unsigned int methodCount;
+    Method* methods = class_copyMethodList(clazz, &methodCount);
+    
+    for (int i = 0; i < methodCount; i++) {
+        SEL selector = method_getName(methods[i]);
+        char returnType[255];
+        method_getReturnType(methods[i], returnType, 255);
+        NSLog(@"CocoaPodsPlugIn: %s %@", returnType, NSStringFromSelector(selector));
+    }
+    
+    free(methods);
+    
+    Class superclass = class_getSuperclass(clazz);
+    
+    if (superclass) {
+        LogMethods(superclass);
+    }
+}
+
+#pragma mark -
+
 @implementation CocoaPodsPlugIn
 
 
@@ -40,29 +79,33 @@ void Swizzle(Class c, SEL orig, SEL new) {
 - (id)init
 {
     if (self = [super init]) {
-        Class clazz = NSClassFromString(@"IDECapsuleView");
         SEL newSelector = @selector(bbu_initWithCapsuleViewController:);
-        SEL originalSelector = @selector(initWithCapsuleViewController:);
-        
-        IMP imp = imp_implementationWithBlock(^(id sself, id vc) {
-            NSLog(@"IDEKit: %@\n%@", sself, vc);
+        SwizzleWithBlock(NSClassFromString(@"IDECapsuleView"), @selector(initWithCapsuleViewController:), newSelector,
+                         ^(id sself, id vc) {
+            NSLog(@"CocoaPodsPlugIn: %@\n%@", sself, vc);
             //[sself performSelector:@selector(_subtreeDescription)];
-            
+        
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
             return [sself performSelector:newSelector withObject:vc];
+#pragma clang diagnostic pop
         });
         
-        if (!clazz) {
-            NSLog(@"IDEKit: Class not found.");
-        }
+        Class thing = NSClassFromString(@"SummaryTargetFrameworksViewController");
         
-        Method m = class_getInstanceMethod(clazz, originalSelector);
-        if (!class_addMethod(clazz, newSelector, imp, method_getTypeEncoding(m))) {
-            NSLog(@"IDEKit: Something went wrong!");
-        }
+        LogMethods(thing);
         
-        Swizzle(clazz, originalSelector, newSelector);
+        newSelector = @selector(bbu_titleForDisplay);
+        SwizzleWithBlock(thing, @selector(titleForDisplay), newSelector,
+                         ^(id sself) {
+                             return @"YOLO!";
+                             //return [sself performSelector:newSelector];
+                         });
         
-        NSLog(@"IDEKit: Added logs");
+        newSelector = @selector(bbu_numberOfRowsInTableView:);
+        SwizzleWithBlock(thing, @selector(numberOfRowsInTableView:), newSelector, ^(id sself, id tableView) {
+            return 1;
+        });
     }
     return self;
 }
