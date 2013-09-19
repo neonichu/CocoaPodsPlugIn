@@ -26,6 +26,8 @@
 
 @interface NSObject (Yolo)
 
+- (NSCell *)bbu_preparedCellAtColumn:(NSInteger)column row:(NSInteger)row;
+- (void)bbu_setObjectValue:(id)value;
 //- (NSArray*)bbu_tableColumns;
 - (NSTableView*)bbu_tableView;
 - (NSCell *)bbu_tableView:(NSTableView *)tableView dataCellForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row;
@@ -87,6 +89,17 @@ void LogMethods(Class clazz) {
 
 #pragma mark -
 
+@interface CocoaPodsPlugIn ()
+
+@property NSTableView* tableView;
+
+@property (strong) NSString* foo;
+@property (strong) NSImage* bar;
+
+@end
+
+#pragma mark -
+
 @implementation CocoaPodsPlugIn
 
 
@@ -128,6 +141,17 @@ void LogMethods(Class clazz) {
     return [pods copy];
 }
 
+-(void)logCell:(DVTImageAndTextCell*)dtvCell {
+    //NSInteger row = dtvCell.tag;
+    //NSArray* pods = [[self class] listOfCurrentPods];
+    //dtvCell.stringValue = pods[row];
+    //dtvCell.image = [NSImage imageNamed:@"icon"];
+    //dtvCell.title = [pods[row] copy];
+    
+    NSLog(@"Cell: %@", dtvCell);
+    NSLog(@"Cell value afterDelay: %@ %@", NSStringFromClass(((NSObject*)dtvCell.objectValue).class), dtvCell.objectValue);
+}
+
 - (id)init
 {
     if (self = [super init]) {
@@ -160,7 +184,8 @@ void LogMethods(Class clazz) {
         newSelector = @selector(bbu_titleForDisplay);
         SwizzleWithBlock(thing, @selector(titleForDisplay), newSelector,
                          ^(id sself) {
-                             return @"YOLO!";
+                             return @"CocoaPods";
+                             //return @"YOLO!";
                              //return [sself performSelector:newSelector];
                          });
         
@@ -212,17 +237,42 @@ void LogMethods(Class clazz) {
                                  [dtvCell.bindingHelper unbind:@"title"];
                                  
                                  NSArray* pods = [[self class] listOfCurrentPods];
+                                 self.foo = [pods[row] copy];
+                                 self.bar = [NSImage imageNamed:@"icon"];
+                                 
                                  //dtvCell.stringValue = pods[row];
-                                 dtvCell.image = [NSImage imageNamed:@"icon"];
-                                 dtvCell.title = [pods[row] copy];
+                                 dtvCell.image = self.bar;
+                                 dtvCell.title = self.foo;
+                                 dtvCell.tag = row;
                                  //[dtvCell setObjectValue:pods[row]];
                                  //[dtvCell setAttributedStringValue:pods[row]];
                                  
-                                 dtvCell.subtitle = @"Superstar Marin";
+                                 //dtvCell.subtitle = @"Superstar Marin";
                                  
                                  NSLog(@"Cell value: %@ %@", NSStringFromClass(((NSObject*)dtvCell.objectValue).class), dtvCell.objectValue);
+                                 
+                                 [self performSelector:@selector(logCell:) withObject:dtvCell afterDelay:1.0];
+                                 
                                  // Cell is not a view.
                                  //NSLog(@"cell view hierarchy: %@", [dtvCell performSelector:@selector(_subtreeDescription)]);
+                             }
+                             
+                             return cell;
+                         });
+        
+        
+        newSelector = @selector(bbu_preparedCellAtColumn:row:);
+        SwizzleWithBlock(NSClassFromString(@"NSTableView"), @selector(preparedCellAtColumn:row:), newSelector,
+                         ^(NSTableView* sself, NSInteger col, NSInteger row) {
+                             NSCell* cell = [sself bbu_preparedCellAtColumn:col row:row];
+                             
+                             if ([NSStringFromClass(cell.class) isEqualToString:@"IDENavigatorDataCell"] && [sself.autosaveName isEqualToString:@"cocoapods"]) {
+                                 DVTImageAndTextCell* dtvCell = (DVTImageAndTextCell*)cell;
+                                 
+                                 NSArray* pods = [[self class] listOfCurrentPods];
+                                 dtvCell.image = [NSImage imageNamed:@"icon"];
+                                 dtvCell.title = [pods[row] copy];
+                                 
                              }
                              
                              return cell;
@@ -248,6 +298,16 @@ void LogMethods(Class clazz) {
                 NSTableColumn* col = tableView.tableColumns[1];
                 [tableView removeTableColumn:col];
             }
+            
+            tableView.autosaveName = @"cocoapods";
+        });
+        
+        newSelector = @selector(bbu_setObjectValue:);
+        SwizzleWithBlock(NSClassFromString(@"IDENavigatorDataCell"), @selector(setObjectValue:), newSelector,
+                         ^(id sself, id objectValue) {
+                             NSLog(@"Call stack: %@", [NSThread callStackSymbols]);
+                             
+                             [sself bbu_setObjectValue:objectValue];
         });
         
     }

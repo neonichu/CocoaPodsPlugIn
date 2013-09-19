@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		860F6F9617EB4F0100EE4920 /* CCPWorkspaceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 861FAC7F17EB22080020404A /* CCPWorkspaceManager.m */; };
 		8644AD7417EB1A29004E2C2F /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8644AD7317EB1A29004E2C2F /* AppKit.framework */; };
 		8644AD7617EB1A29004E2C2F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8644AD7517EB1A29004E2C2F /* Foundation.framework */; };
 		8644AD7F17EB1A29004E2C2F /* CocoaPodsPlugIn.m in Sources */ = {isa = PBXBuildFile; fileRef = 8644AD7E17EB1A29004E2C2F /* CocoaPodsPlugIn.m */; };
@@ -159,7 +158,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				860F6F9617EB4F0100EE4920 /* CCPWorkspaceManager.m in Sources */,
 				8644AD7F17EB1A29004E2C2F /* CocoaPodsPlugIn.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
